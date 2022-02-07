@@ -1,0 +1,19 @@
+{
+    "imapUser":"",
+    "imapPassword":"",
+    "imapHost":"",
+    "imapPort":993,
+    "checkInterval":3600,
+    "openCollectiveOrigin": "https://opencollective.com",
+    "openCollectiveApiEndPoint":"https://api.opencollective.com/graphql/v2",
+    "openCollectiveUploadEndPoint":"https://opencollective.com/api/images",
+    "openCollectiveApiKey":"",
+    "virtualCards":["Hetzner - jMonkeyEngine","jMonkey Engine"],
+    "collective":"jmonkeyengine",
+    "mailPrefix":"Hetzner",
+    "receiptPrefix":"Hetzner_",
+    "receiptEmitters":["Hetzner Online GmbH <billing@hetzner.com>","Accounting - Hetzner Online GmbH <billing@hetzner.com>"],
+    "tags":["hosting"],
+    "telegramBotToken":"",
+    "telegramBotChatID":""
+}

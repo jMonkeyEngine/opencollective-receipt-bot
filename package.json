@@ -1,0 +1,28 @@
+{
+  "dependencies": {
+    "form-data": "^4.0.0",
+    "imap-simple": "^5.1.0",
+    "lodash": "^4.17.21",
+    "mailparser": "^3.4.0",
+    "node-fetch": "^3.1.0",
+    "node-telegram-bot-api": "^0.56.0"
+  },
+  "type": "module",
+  "name": "opencollective-receipt-bot",
+  "description": "Bot that sends mailed receipts to opencollective expenses",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jMonkeyEngine/opencollective-receipt-bot.git"
+  },
+  "author": "Riccardo Balbo",
+  "license": "BSD 3-Clause License",
+  "bugs": {
+    "url": "https://github.com/jMonkeyEngine/opencollective-receipt-bot/issues"
+  },
+  "homepage": "https://github.com/jMonkeyEngine/opencollective-receipt-bot#readme"
+}
