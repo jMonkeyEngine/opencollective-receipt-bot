@@ -79,6 +79,7 @@ async function getMailedReceipts(Config) {
             }
         }
     }
+    connection.end();
     return receipts;
 }
 
