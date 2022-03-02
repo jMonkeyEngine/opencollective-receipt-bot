@@ -211,6 +211,7 @@ async function checkAndSubmit(config, log) {
     if (unsentReceipts.length == 0) return false;
 
     // Submit receipts
+    let submit=false;
     let receiptI = unsentReceipts.length - 1;
     for (const transaction of transactions) {
         if (!transaction.expense.items[0].description) {
@@ -289,11 +290,12 @@ async function checkAndSubmit(config, log) {
                 })
             }).then((res) => res.json());
             log(JSON.stringify(resp));
+            submit=true;
             receiptI--;
         }
     }
 
-    return true;
+    return submit;
 }
 
 
