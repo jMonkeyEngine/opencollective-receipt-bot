@@ -133,39 +133,34 @@ async function loop(config, log, submitInfo, submitError, resetLog) {
 
 async function checkAndSubmit(config, log) {
     log("Check for new receipt.");
-    const OC_QUERY = `query collective {
-            collective(slug: "${config.collective}") {
-            name
-            transactions(type:DEBIT,limit:100){
+    const OC_QUERY = `
+        query expenses {
+            expenses(account: {slug: "${config.collective}"}) {
                 nodes{
-                id,
-                legacyId,
-                createdAt,
-                isRefund,
-                isRefunded,
-                description,
-                type,
-                expense{
                     id
-                    virtualCard{
+                    status
+                    tags
+                    requiredLegalDocuments
+                    description
+                    createdAt
+                    virtualCard {
                         name
                     }
-                    status
                     items{
-                        id
+                        description
                         amount
-                        description,
+                        createdAt
+                        incurredAt
+                        id
                         url
-                    }
-                    tags
-                    description            
-                }          
+                    }      
                 }
-            }    
             }
-        }`
+        }
+    `;
+           
 
-    // Find transactions
+    // Find expenses
     let resp = await fetch(config.openCollectiveApiEndPoint + "/" + config.openCollectiveApiKey, {
         method: 'POST',
         headers: {
@@ -177,19 +172,16 @@ async function checkAndSubmit(config, log) {
         })
     }).then((res) => res.json());
 
-    const transactions = resp.data.collective.transactions.nodes.filter(ex => {
-        if (ex.isRefunded || ex.isRefund) return false;
-        const exx = ex.expense;
-        if (!exx) return false;
-        return exx.virtualCard && config.virtualCards.includes(exx.virtualCard.name);
+    const expenses = resp.data.expenses.nodes.filter(ex => {
+        return ex.virtualCard&&config.virtualCards.includes(ex.virtualCard.name);
     }); // new -> old
 
 
     // Find last submitted receipt
     let lastReceiptName;
-    for (const transaction of transactions) {
-        if (transaction.expense.items[0].description) {
-            lastReceiptName = transaction.expense.items[0].description;
+    for (const expense of expenses) {
+        if (expense.items[0].description) {
+            lastReceiptName = expense.items[0].description;
             break;
         }
     }
@@ -213,11 +205,11 @@ async function checkAndSubmit(config, log) {
     // Submit receipts
     let submit=false;
     let receiptI = unsentReceipts.length - 1;
-    for (const transaction of transactions) {
-        if (!transaction.expense.items[0].description) {
+    for (const expense of expenses) {
+        if (!expense.items[0].description) {
             if (receiptI < 0) break;
             const receipt = unsentReceipts[receiptI];
-            log("Send " + receipt.name + " to transaction " + transaction.id + transaction.legacyId + transaction.description + transaction.createdAt);
+            log("Send " + receipt.name + " to expense " + expense.id + " " + expense.description + " " + expense.createdAt);
 
             const bodyData = new FormData()
             bodyData.append("file", receipt.data, receipt.name)
@@ -264,12 +256,12 @@ async function checkAndSubmit(config, log) {
 
             const mutationData = {
                 "expense": {
-                    "id": transaction.expense.id,
+                    "id": expense.id,
                     "tags": config.tags,
                     "items": [
                         {
-                            "id": transaction.expense.items[0].id,
-                            "amount": transaction.expense.items[0].amount,
+                            "id": expense.items[0].id,
+                            "amount": expense.items[0].amount,
                             "description": receipt.name,
                             "url": fileUrl
                         }
