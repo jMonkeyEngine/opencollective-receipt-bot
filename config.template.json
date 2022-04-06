@@ -15,5 +15,7 @@
     "receiptEmitters":["Hetzner Online GmbH <billing@hetzner.com>","Accounting - Hetzner Online GmbH <billing@hetzner.com>"],
     "tags":["hosting"],
     "telegramBotToken":"",
-    "telegramBotChatID":""
+    "telegramBotChatID":"",
+    "numErrorsToTriggerSubmission":5
+
 }

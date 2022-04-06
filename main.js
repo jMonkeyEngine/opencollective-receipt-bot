@@ -114,6 +114,8 @@ async function main() {
     loop(config, log, submitInfo, submitError, resetLog);
 }
 
+
+let ERRORS=0;
 async function loop(config, log, submitInfo, submitError, resetLog) {
     try {
         if (await checkAndSubmit(config, log)) {
@@ -123,9 +125,14 @@ async function loop(config, log, submitInfo, submitError, resetLog) {
             resetLog();
             console.log("No new receipt found. Sleep for a while.");
         }
+        ERRORS=0;
     } catch (eeeee) {
-        log("" + eeeee)
-        submitError();
+        log("" + eeeee);
+        ERRORS++;
+        if(ERRORS>=config.numErrorsToTriggerSubmission){
+            submitError();
+            ERRORS=0;
+        }
     }
     setTimeout(()=>loop(config,log,submitInfo,submitError,resetLog), config.checkInterval * 1000);
 }
