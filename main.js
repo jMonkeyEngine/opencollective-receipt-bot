@@ -132,6 +132,8 @@ async function loop(config, log, submitInfo, submitError, resetLog) {
         if(ERRORS>=config.numErrorsToTriggerSubmission){
             submitError();
             ERRORS=0;
+        }else{
+            resetLog();
         }
     }
     setTimeout(()=>loop(config,log,submitInfo,submitError,resetLog), config.checkInterval * 1000);
