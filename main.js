@@ -109,8 +109,8 @@ async function main() {
     const resetLog = () => {
         logs = "";
     };
-    log("Started!");
-    submitInfo();
+    // log("Started!");
+    // submitInfo();
     loop(config, log, submitInfo, submitError, resetLog);
 }
 
