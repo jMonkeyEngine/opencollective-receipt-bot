@@ -91,6 +91,7 @@ async function main() {
 
     let logs = "";
     const log = (tx) => {
+        console.log(tx);
         logs += tx+"\n";
     };
     const submitError = () => {
@@ -202,11 +203,15 @@ async function checkAndSubmit(config, log) {
     // Find unsent receipts from mail account
     let unsentReceipts = []; // old -> new
     const mailedReceipts = await getMailedReceipts(config);
-    for (let i = mailedReceipts.length - 2; i >= 0; i--) {
-        const mailedReceipt = mailedReceipts[i];
-        if (mailedReceipt.name == lastReceiptName) {
-            unsentReceipts = mailedReceipts.slice(i + 1);
-            break;
+    if(mailedReceipts.length==1&&mailedReceipts[0].name != lastReceiptName){
+        unsentReceipts.push(mailedReceipts[0]);
+    }else{
+        for (let i = mailedReceipts.length - 2; i >= 0; i--) {
+            const mailedReceipt = mailedReceipts[i];
+            if (mailedReceipt.name == lastReceiptName) {
+                unsentReceipts = mailedReceipts.slice(i + 1);
+                break;
+            }
         }
     }
     if (unsentReceipts.length == 0) return false;
