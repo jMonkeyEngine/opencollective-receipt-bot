@@ -128,6 +128,7 @@ async function loop(config, log, submitInfo, submitError, resetLog) {
         }
         ERRORS=0;
     } catch (eeeee) {
+        console.error(eeeee)
         log("" + eeeee);
         ERRORS++;
         if(ERRORS>=config.numErrorsToTriggerSubmission){
@@ -155,6 +156,7 @@ async function checkAndSubmit(config, log) {
                     createdAt
                     virtualCard {
                         name
+                        id
                     }
                     items{
                         description
@@ -183,7 +185,10 @@ async function checkAndSubmit(config, log) {
     }).then((res) => res.json());
 
     const expenses = resp.data.expenses.nodes.filter(ex => {
-        return ex.virtualCard&&config.virtualCards.includes(ex.virtualCard.name);
+        return ex.virtualCard&&(
+            config.virtualCards.includes(ex.virtualCard.name)
+            ||config.virtualCards.includes(ex.virtualCard.id)
+        );
     }); // new -> old
 
 
@@ -226,7 +231,9 @@ async function checkAndSubmit(config, log) {
             log("Send " + receipt.name + " to expense " + expense.id + " " + expense.description + " " + expense.createdAt);
 
             const bodyData = new FormData()
-            bodyData.append("file", receipt.data, receipt.name)
+            bodyData.append("file", receipt.data, receipt.name);
+            bodyData.append("kind", "EXPENSE_ATTACHED_FILE");
+
             const fileUrl = await fetch(config.openCollectiveUploadEndPoint, {
                 body: bodyData,
                 headers: {
@@ -239,6 +246,7 @@ async function checkAndSubmit(config, log) {
                     "Sec-Fetch-Dest": "empty",
                     "Sec-Fetch-Mode": "no-cors",
                     "Sec-Fetch-Site": "same-origin",
+                    "Api-Key": config.openCollectiveApiKey,
                     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:97.0) Gecko/20100101 Firefox/97.0"
                 },
                 method: "POST"
