@@ -16,6 +16,8 @@
     "tags":["hosting"],
     "telegramBotToken":"",
     "telegramBotChatID":"",
-    "numErrorsToTriggerSubmission":5
+    "numErrorsToTriggerSubmission":5,
+    "healthMonitor":"https://status.frk.wf",
+    "healthMonitorKey":""
 
 }

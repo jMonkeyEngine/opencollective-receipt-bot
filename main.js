@@ -83,6 +83,13 @@ async function getMailedReceipts(Config) {
     return receipts;
 }
 
+async function healthReport(config, v,log,ping=0){
+    if(!log)log=v?"OK":"FAIL";
+    const status=v?"up":"down";
+    const url=`${config.healthMonitor}/api/push/${config.healthMonitorKey}?status=${status}&msg=${log}&ping=${ping}`
+    await fetch(url);
+}
+
 
 async function main() {
     const config = JSON.parse(await Fs.readFile("./config.json"));
@@ -99,7 +106,6 @@ async function main() {
         console.error(logs);
         if (bot) bot.sendMessage(botChatId, logs);
         logs = "";
-
     };
     const submitInfo = () => {
         if (logs == "") return;
@@ -122,14 +128,17 @@ async function loop(config, log, submitInfo, submitError, resetLog) {
         if (await checkAndSubmit(config, log)) {
             submitInfo();
             console.log("New receipt found.")
+            healthReport(config,true,"New receipt found");
         } else {
             resetLog();
             console.log("No new receipt found. Sleep for a while.");
-        }
+            healthReport(config,true,"No new receipt found");
+        }       
         ERRORS=0;
     } catch (eeeee) {
         console.error(eeeee)
         log("" + eeeee);
+        healthReport(config,false,eeeee.message)
         ERRORS++;
         if(ERRORS>=config.numErrorsToTriggerSubmission){
             submitError();
