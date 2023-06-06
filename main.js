@@ -200,36 +200,40 @@ async function checkAndSubmit(config, log) {
         );
     }); // new -> old
 
-
     // Find last submitted receipt
-    let lastReceiptName;
+    const lastReceiptNames=[];
     for (const expense of expenses) {
         if (expense.items[0].description) {
-            lastReceiptName = expense.items[0].description;
-            break;
+            lastReceiptNames.push(expense.items[0].description);
+            // break;
         }
     }
 
-    if (!lastReceiptName) return false;
-    log("Last receipt " + lastReceiptName);
+    if (lastReceiptNames.length==0) return false;
+    log("Last receipts " + lastReceiptNames.join(","));
 
 
     // Find unsent receipts from mail account
     let unsentReceipts = []; // old -> new
     const mailedReceipts = await getMailedReceipts(config);
-    if(mailedReceipts.length==1&&mailedReceipts[0].name != lastReceiptName){
-        unsentReceipts.push(mailedReceipts[0]);
-    }else{
-        for (let i = mailedReceipts.length - 2; i >= 0; i--) {
-            const mailedReceipt = mailedReceipts[i];
-            if (mailedReceipt.name == lastReceiptName) {
-                unsentReceipts = mailedReceipts.slice(i + 1);
-                break;
+
+    for(const lastReceiptName of lastReceiptNames){
+        if(mailedReceipts.length==1&&mailedReceipts[0].name != lastReceiptName){
+            unsentReceipts.push(mailedReceipts[0]);
+        }else{
+            for (let i = mailedReceipts.length - 2; i >= 0; i--) {
+                const mailedReceipt = mailedReceipts[i];
+                if (mailedReceipt.name == lastReceiptName) {
+                    unsentReceipts = mailedReceipts.slice(i + 1);
+                    break;
+                }
             }
         }
+        if (unsentReceipts.length != 0) break;
+
     }
     if (unsentReceipts.length == 0) return false;
-
+  
     // Submit receipts
     let submit=false;
     let receiptI = unsentReceipts.length - 1;
