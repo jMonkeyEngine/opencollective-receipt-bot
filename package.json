@@ -5,7 +5,7 @@
     "lodash": "^4.17.21",
     "mailparser": "^3.6.4",
     "mailsplit": "^5.4.0",
-    "node-fetch": "^3.3.1",
+    "node-fetch": "^3.3.2",
     "node-telegram-bot-api": "^0.61.0"
   },
   "type": "module",
