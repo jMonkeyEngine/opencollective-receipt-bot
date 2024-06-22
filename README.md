@@ -20,3 +20,4 @@ docker run \
 --tmpfs /tmp \
  oc-receipt-bot
 ```
+
